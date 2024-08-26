@@ -13,7 +13,7 @@ const Layout = () => {
       </main>
 
       <footer style={styles.footer}>
-        <p>&copy; 2024 To Do List App. All rights reserved.</p>
+        <p>&copy; Task 7 Luyanda Shamase To Do List App. All rights reserved.</p>
       </footer>
     </div>
   );
@@ -24,6 +24,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
+    width:'300%'
   },
   header: {
     backgroundColor: '#5B67CA',
@@ -41,7 +42,7 @@ const styles = {
     backgroundColor: '#f5f5f5',
   },
   footer: {
-    backgroundColor: '#5B67CA',
+    backgroundColor: '#3E5151',
     color: '#fff',
     padding: '10px 20px',
     textAlign: 'center',

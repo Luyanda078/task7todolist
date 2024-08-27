@@ -25,6 +25,7 @@ const styles = {
     flexDirection: 'column',
     minHeight: '100vh',
     width:'300%'
+
   },
   header: {
     backgroundColor: '#5B67CA',
@@ -40,6 +41,7 @@ const styles = {
     flex: 1,
     padding: '20px',
     backgroundColor: '#f5f5f5',
+    
   },
   footer: {
     backgroundColor: '#3E5151',

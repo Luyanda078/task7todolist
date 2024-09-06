@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const db = require('better-sqlite3')('todolist.db');
+const bcrypt = require('bcrypt');
 const app = express();
 const port = 3001;
 
@@ -9,19 +10,69 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
 
-// Create the todos table if it doesn't exist
-const createTable = () => {
-  const sql = `
+// Create tables if they don't exist
+const createTables = () => {
+  const sqlTodos = `
     CREATE TABLE IF NOT EXISTS todos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       description TEXT NOT NULL,
-      priority TEXT CHECK(priority IN ('High', 'Medium', 'Low')) NOT NULL
+      priority TEXT CHECK(priority IN ('High', 'Medium', 'Low')) NOT NULL,
+      user_id INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
   `;
-  db.prepare(sql).run();
+  const sqlUsers = `
+    CREATE TABLE IF NOT EXISTS users (
+      user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      phone_number TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL
+    )
+  `;
+  db.prepare(sqlTodos).run();
+  db.prepare(sqlUsers).run();
 };
 
-createTable();
+createTables();
+
+// Sign up route
+app.post('/signup', async (req, res) => {
+  const { fullName, phoneNumber, email, password } = req.body;
+
+  try {
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const info = db.prepare('INSERT INTO users (full_name, phone_number, email, password_hash) VALUES (?, ?, ?, ?)').run(fullName, phoneNumber, email, passwordHash);
+    res.status(201).json({ userId: info.lastInsertRowid });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to create user' });
+  }
+});
+
+// Login route
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    res.status(200).json({ userId: user.user_id, fullName: user.full_name });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Get all to-do items
 app.get('/todos', (req, res) => {
@@ -31,14 +82,14 @@ app.get('/todos', (req, res) => {
 
 // Add a new to-do item
 app.post('/todos', (req, res) => {
-  const { description, priority } = req.body;
+  const { description, priority, userId } = req.body;
 
-  if (!description || !priority) {
-    return res.status(400).json({ error: 'Description and priority are required' });
+  if (!description || !priority || !userId) {
+    return res.status(400).json({ error: 'Description, priority, and user ID are required' });
   }
 
   try {
-    const info = db.prepare('INSERT INTO todos (description, priority) VALUES (?, ?)').run(description, priority);
+    const info = db.prepare('INSERT INTO todos (description, priority, user_id) VALUES (?, ?, ?)').run(description, priority, userId);
     res.status(201).json({ id: info.lastInsertRowid, description, priority });
   } catch (err) {
     res.status(400).json({ error: 'Failed to add to-do item' });

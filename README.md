@@ -5,11 +5,11 @@
 ## Run Locally
 Clone the project
 ```bash
- https://github.com/Luyanda078/Boolean-Work
+https://github.com/Luyanda078/task7todolist
 ```
 Go to the project directory
 ```bash
-  cd Boolean-Work
+  cd client & cd server
 ```
 Install dependencies
 ```bash

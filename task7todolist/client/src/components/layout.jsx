@@ -13,7 +13,7 @@ const Layout = () => {
       </main>
 
       <footer style={styles.footer}>
-        <p>&copy; Task 7 Luyanda Shamase To Do List App. All rights reserved.</p>
+        <p>&copy; Task 7 Luyanda Shamase - To Do List App. All rights reserved.</p>
       </footer>
     </div>
   );

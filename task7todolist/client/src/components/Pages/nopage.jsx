@@ -1,5 +1,5 @@
 import React from 'react'
-import ErrorPage from '../assets/ErrorPage.png'
+import ErrorPage from '../../assets/ErrorPage.png'
 
 function Nopage() {
   return (

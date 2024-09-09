@@ -4,7 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes , Navigate} from 'react-router-dom';
 import LandingPage from './components/Pages/landingPage';
 import LoginPage from './components/Pages/login';
-import SignUpPage from './components/register';
+import SignUpPage from './components/Pages/register';
 import Layout from './components/layout';
 import Nopage from './components/Pages/nopage';
 import Header from './components/header';
@@ -30,6 +30,7 @@ function App() {
           <Route path="signup" element={<SignUpPage />} />
           <Route path="/todolist" element={<ToDoListPage />} />
           <Route path="*" element={<Nopage />} />
+          
           <Route
             path="todolist"
             element={isAuthenticated ? <ToDoListPage /> : <Navigate to="/login" />}

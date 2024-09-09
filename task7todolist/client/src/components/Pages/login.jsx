@@ -4,6 +4,7 @@ import InputField from '../../inputfield';
 import Button from '../button';
 import Header from '../header';
 
+import axios from 'axios';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +33,7 @@ const Login = () => {
 
     try {
       // Replace with your server login logic
-      const response = await fetch('http://localhost:3001/login', {
+      const response = await axios.fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

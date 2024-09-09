@@ -221,9 +221,7 @@ const ToDoListPage = () => {
             key={task.id}
             style={{
               ...styles.taskItem,
-              ...(task.priority === 'High' ? styles.priorityHigh : 
-                  task.priority === 'Medium' ? styles.priorityMedium : 
-                  styles.priorityLow),
+              ...(task.priority === 'High' ? styles.priorityHigh : task.priority === 'Medium' ? styles.priorityMedium : styles.priorityLow),
             }}
           >
             <div>

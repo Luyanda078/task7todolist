@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import InputField from '../../inputfield';
 import Button from '../button';
 import Header from '../header';
+import axios from 'axios';
 
 const SignUpPage = () => {
   const [fullName, setFullName] = useState('');
@@ -34,15 +35,32 @@ const SignUpPage = () => {
     return newErrors;
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    // Handle sign-up logic (e.g., send data to server)
-    console.log('Signing up with:', fullName, phoneNumber, email, password);
+    try {
+      const response = await axios.post('http://localhost:3001/signup', {
+        fullName,
+        phoneNumber,
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        console.log('Signed up successfully:', response.data);
+        // Handle successful signup (e.g., redirect or show a success message)
+      }
+    } catch (error) {
+      if (error.response) {
+        setErrors({ server: error.response.data.error });
+      } else {
+        setErrors({ server: 'Network error' });
+      }
+    }
   };
 
   return (
@@ -83,7 +101,7 @@ const SignUpPage = () => {
           onChange={e => setConfirmPassword(e.target.value)}
           error={errors.confirmPassword}
         />
-        <button text="Done" onClick={handleSignUp} />
+        <Button text="Done" onClick={handleSignUp} />
         <div style={styles.linkContainer}>
           <span>Already have an account? </span>
           <Link to="/login" style={styles.link}>Log In</Link>

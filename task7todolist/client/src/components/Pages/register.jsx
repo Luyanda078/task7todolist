@@ -44,7 +44,6 @@ const SignUpPage = () => {
       setErrors(validationErrors);
       return;
     }
-
     try {
       const response = await axios.post('http://localhost:3001/signup', {
         fullName,
@@ -52,7 +51,6 @@ const SignUpPage = () => {
         email,
         password,
       });
-
       if (response.status === 201) {
         setMessage('Registration successful! Please log in.');
         setErrors({});
@@ -69,13 +67,20 @@ const SignUpPage = () => {
       } else {
         setErrors({ server: 'Network error' });
       }
-      setMessage('');
+      // Ensure message reflects the error situation
+      setMessage('Registration failed. Please try again.');
     }
   };
 
   return (
     <div style={styles.container}>
       <Header />
+      {/* Fancy link to the landing page in the upper right corner */}
+      <div style={styles.navLink}>
+        <Link to="/" style={styles.link}>
+          Go to Landing Page
+        </Link>
+      </div>
       <div style={styles.formContainer}>
         <InputField
           label="Full Name"
@@ -112,12 +117,16 @@ const SignUpPage = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           error={errors.confirmPassword}
         />
-        <button onClick={handleSignUp}>Done</button>
+        <button onClick={handleSignUp} style={styles.button}>
+          Done
+        </button>
         {message && <p style={styles.successMessage}>{message}</p>}
         {errors.server && <p style={styles.errorMessage}>{errors.server}</p>}
         <div style={styles.linkContainer}>
           <span>Already have an account? </span>
-          <Link to="/login" style={styles.link}>Log In</Link>
+          <Link to="/login" style={styles.link}>
+            Log In
+          </Link>
         </div>
       </div>
     </div>
@@ -136,6 +145,29 @@ const styles = {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     color: '#fff',
+    position: 'relative',
+  },
+  navLink: {
+    position: 'absolute',
+    top: '20px',
+    right: '30px',
+  },
+  link: {
+    color: '#fff',
+    backgroundColor: '#5B67CA',
+    padding: '10px 20px',
+    borderRadius: '20px',
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s, transform 0.3s',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  linkHover: {
+    ':hover': {
+      backgroundColor: '#4a53aa',
+      transform: 'scale(1.05)',
+    },
   },
   formContainer: {
     width: '80%',
@@ -148,10 +180,16 @@ const styles = {
   linkContainer: {
     marginTop: '20px',
   },
-  link: {
-    color: '#5B67CA',
+  button: {
+    marginTop: '15px',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    backgroundColor: '#5B67CA',
+    color: '#fff',
+    fontWeight: 'bold',
     cursor: 'pointer',
-    textDecoration: 'underline',
+    transition: 'background-color 0.3s',
   },
   successMessage: {
     color: 'green',

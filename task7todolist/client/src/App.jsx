@@ -27,10 +27,10 @@ function App() {
           {/* Nested routes will be rendered inside the Layout */}
           <Route index element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="signup" element={<SignUpPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="/todolist" element={<ToDoListPage />} />
           <Route path="*" element={<Nopage />} />
-          
+
           <Route
             path="todolist"
             element={isAuthenticated ? <ToDoListPage /> : <Navigate to="/login" />}

@@ -10,44 +10,75 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
 
-// Create tables if they don't exist
+/// Create tables if they don't exist
 const createTables = () => {
-  const sqlTodos = `
-    CREATE TABLE IF NOT EXISTS todos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      description TEXT NOT NULL,
-      priority TEXT CHECK(priority IN ('High', 'Medium', 'Low')) NOT NULL,
-      user_id INTEGER,
-      FOREIGN KEY (user_id) REFERENCES users(user_id)
-    )
-  `;
-  const sqlUsers = `
-    CREATE TABLE IF NOT EXISTS users (
-      user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      full_name TEXT NOT NULL,
-      phone_number TEXT NOT NULL UNIQUE,
-      email TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL
-    )
-  `;
-  db.prepare(sqlTodos).run();
-  db.prepare(sqlUsers).run();
-};
+    const sqlTodos = `
+      CREATE TABLE IF NOT EXISTS todos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        description TEXT NOT NULL,
+        priority TEXT CHECK(priority IN ('High', 'Medium', 'Low')) NOT NULL,
+        user_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+      )
+    `;
+    const sqlUsers = `
+      CREATE TABLE IF NOT EXISTS users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        full_name TEXT NOT NULL,
+        phone_number TEXT NOT NULL UNIQUE,
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL
+      )
+    `;
+    db.prepare(sqlTodos).run();
+    db.prepare(sqlUsers).run();
+  };
+  
+  createTables();
+  
+  // Sign up route
+  app.post('/signup', async (req, res) => {
+    const { fullName, phoneNumber, email, password } = req.body;
+  
+    try {
+      const existingUser = db
+        .prepare('SELECT * FROM users WHERE email = ? OR phone_number = ?')
+        .get(email, phoneNumber);
+      if (existingUser) {
+        return res.status(400).json({ error: 'User already exists' });
+      }
+  
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(password, saltRounds);
+  
+      const info = db
+        .prepare(
+          'INSERT INTO users (full_name, phone_number, email, password_hash) VALUES (?, ?, ?, ?)'
+        )
+        .run(fullName, phoneNumber, email, passwordHash);
+  
+      res.status(201).json({ userId: info.lastInsertRowid });
+    } catch (err) {
+      res.status(400).json({ error: 'Failed to create user' });
+    }
+  });
 
-createTables();
+// Get all users
+app.get('/users', (req, res) => {
+  const sql = `SELECT * FROM users`;
+  const rows = db.prepare(sql).all();
+  res.json(rows);
+});
 
-// Sign up route
-app.post('/signup', async (req, res) => {
-  const { fullName, phoneNumber, email, password } = req.body;
-
-  try {
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    const info = db.prepare('INSERT INTO users (full_name, phone_number, email, password_hash) VALUES (?, ?, ?, ?)').run(fullName, phoneNumber, email, passwordHash);
-    res.status(201).json({ userId: info.lastInsertRowid });
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to create user' });
+// Get a user by email
+app.get('/users/:email', (req, res) => {
+  const { email } = req.params;
+  const sql = `SELECT * FROM users WHERE email = ?`;
+  const row = db.prepare(sql).get(email);
+  if (row) {
+    res.json(row);
+  } else {
+    res.status(404).json({ error: 'User not found' });
   }
 });
 
@@ -65,7 +96,7 @@ app.post('/login', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid password' });
     }
 
     res.status(200).json({ userId: user.user_id, fullName: user.full_name });
@@ -85,11 +116,17 @@ app.post('/todos', (req, res) => {
   const { description, priority, userId } = req.body;
 
   if (!description || !priority || !userId) {
-    return res.status(400).json({ error: 'Description, priority, and user ID are required' });
+    return res
+      .status(400)
+      .json({ error: 'Description, priority, and user ID are required' });
   }
 
   try {
-    const info = db.prepare('INSERT INTO todos (description, priority, user_id) VALUES (?, ?, ?)').run(description, priority, userId);
+    const info = db
+      .prepare(
+        'INSERT INTO todos (description, priority, user_id) VALUES (?, ?, ?)'
+      )
+      .run(description, priority, userId);
     res.status(201).json({ id: info.lastInsertRowid, description, priority });
   } catch (err) {
     res.status(400).json({ error: 'Failed to add to-do item' });
@@ -102,10 +139,14 @@ app.put('/todos/:id', (req, res) => {
   const { description, priority } = req.body;
 
   if (!description || !priority) {
-    return res.status(400).json({ error: 'Description and priority are required' });
+    return res
+      .status(400)
+      .json({ error: 'Description and priority are required' });
   }
 
-  const info = db.prepare('UPDATE todos SET description = ?, priority = ? WHERE id = ?').run(description, priority, id);
+  const info = db
+    .prepare('UPDATE todos SET description = ?, priority = ? WHERE id = ?')
+    .run(description, priority, id);
 
   if (info.changes > 0) {
     res.json({ message: 'To-Do item updated successfully' });
@@ -134,7 +175,8 @@ app.get('/todos/search', (req, res) => {
     return res.status(400).json({ error: 'Keyword is required for search' });
   }
 
-  const todos = db.prepare('SELECT * FROM todos WHERE description LIKE ?').all(`%${keyword}%`);
+  const stmt = db.prepare('SELECT * FROM todos WHERE description LIKE ?');
+  const todos = stmt.all(`%${keyword}%`);
   res.json(todos);
 });
 

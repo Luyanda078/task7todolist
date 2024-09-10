@@ -118,12 +118,19 @@ const styles = {
     alignItems: 'center',
     height: '100vh',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundImage: 'url("https://i.pinimg.com/originals/8e/94/8f/8e948f67e48d099f412133f8a3ca2f7f.jpg")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    color: '#fff', // Adjust text color for better readability on the background
   },
   formContainer: {
     width: '80%',
     maxWidth: '400px',
     textAlign: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Add a semi-transparent background for readability
+    padding: '20px',
+    borderRadius: '10px',
   },
   linkContainer: {
     marginTop: '20px',

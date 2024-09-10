@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import InputField from '../../inputfield';
 import Button from '../button';
 import Header from '../header';
-
 import axios from 'axios';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,19 +33,16 @@ const Login = () => {
 
     try {
       // Replace with your server login logic
-      const response = await axios.fetch('http://localhost:3001/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const response = await axios.post('http://localhost:3001/login', {
+        email,
+        password,
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log('Logged in successfully:', result);
+      if (response.status === 200) {
+        console.log('Logged in successfully:', response.data);
         // Handle successful login (e.g., redirect or store user info)
       } else {
-        setErrors({ server: result.error || 'Login failed' });
+        setErrors({ server: response.data.error || 'Login failed' });
       }
     } catch (error) {
       setErrors({ server: 'Network error' });
@@ -89,15 +86,19 @@ const styles = {
     alignItems: 'center',
     height: '100vh',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    backgroundImage: 'url("https://i.pinimg.com/1200x/b2/09/30/b2093077dae964752b7eabd17fe8d59d.jpg")',
-    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url("https://preview.redd.it/nmgj2dntkym71.jpg?auto=webp&s=b8a21cba35f44062e9092e46bf98721cde37ef0d")',
     backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    color: '#fff', // Adjust text color for better readability
   },
   formContainer: {
     width: '80%',
     maxWidth: '400px',
     textAlign: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background for readability
+    padding: '20px',
+    borderRadius: '10px',
   },
   forgotPassword: {
     marginTop: '10px',

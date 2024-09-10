@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from '../../inputfield';
-// import Button from '../button';
 import Header from '../header';
 import axios from 'axios';
 
@@ -52,27 +51,37 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <Header />
+    
+      <div style={styles.navLink}>
+        <Link to="/" style={styles.fancyLink}>
+          Go to Landing Page
+        </Link>
+      </div>
       <div style={styles.formContainer}>
         <InputField
           label="Enter your email"
           type="email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           error={errors.email}
         />
         <InputField
           label="Enter your password"
           type="password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
         />
         {errors.server && <p style={styles.error}>{errors.server}</p>}
-        <button text="Log In" onClick={handleLogin} >Done</button>
+        <button onClick={handleLogin} style={styles.button}>
+          Done
+        </button>
         <p style={styles.forgotPassword}>Forgot Password?</p>
         <div style={styles.linkContainer}>
           <span>Don’t have an account? </span>
-          <Link to="/signup" style={styles.link}>Sign Up</Link>
+          <Link to="/signup" style={styles.link}>
+            Sign Up
+          </Link>
         </div>
       </div>
     </div>
@@ -90,15 +99,34 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    color: '#fff', // Adjust text color for better readability
+    color: '#fff',
+    position: 'relative',
+    padding: '20px', 
+  },
+  navLink: {
+    position: 'absolute',
+    top: '20px',
+    right: '30px',
+  },
+  fancyLink: {
+    color: '#fff',
+    backgroundColor: '#5B67CA',
+    padding: '10px 20px',
+    borderRadius: '20px',
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s, transform 0.3s',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
   formContainer: {
-    width: '80%',
+    width: '100%',
     maxWidth: '400px',
     textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background for readability
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: '20px',
     borderRadius: '10px',
+    marginTop: '10px',
   },
   forgotPassword: {
     marginTop: '10px',
@@ -116,6 +144,26 @@ const styles = {
   error: {
     color: 'red',
     marginTop: '10px',
+  },
+  button: {
+    width: '100%',
+    padding: '10px',
+    border: 'none',
+    borderRadius: '5px',
+    backgroundColor: '#5B67CA',
+    color: 'white',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+    marginTop: '15px',
+  },
+  '@media (max-width: 768px)': {
+    container: {
+      padding: '10px',
+    },
+    formContainer: {
+      width: '90%',
+    },
   },
 };
 

@@ -67,7 +67,7 @@ const SignUpPage = () => {
       } else {
         setErrors({ server: 'Network error' });
       }
-      // Ensure message reflects the error situation
+ 
       setMessage('Registration failed. Please try again.');
     }
   };
@@ -75,9 +75,9 @@ const SignUpPage = () => {
   return (
     <div style={styles.container}>
       <Header />
-      {/* Fancy link to the landing page in the upper right corner */}
+      
       <div style={styles.navLink}>
-        <Link to="/" style={styles.link}>
+        <Link to="/" style={styles.fancyLink}>
           Go to Landing Page
         </Link>
       </div>
@@ -152,7 +152,7 @@ const styles = {
     top: '20px',
     right: '30px',
   },
-  link: {
+  fancyLink: {
     color: '#fff',
     backgroundColor: '#5B67CA',
     padding: '10px 20px',
@@ -161,9 +161,10 @@ const styles = {
     fontSize: '14px',
     fontWeight: 'bold',
     transition: 'background-color 0.3s, transform 0.3s',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    cursor: 'pointer',
   },
-  linkHover: {
+  fancyLinkHover: {
     ':hover': {
       backgroundColor: '#4a53aa',
       transform: 'scale(1.05)',
@@ -179,6 +180,11 @@ const styles = {
   },
   linkContainer: {
     marginTop: '20px',
+  },
+  link: {
+    color: '#5B67CA',
+    cursor: 'pointer',
+    textDecoration: 'underline',
   },
   button: {
     marginTop: '15px',

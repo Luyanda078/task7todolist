@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from '../../inputfield';
-import Button from '../button';
 import Header from '../header';
 import axios from 'axios';
 
@@ -12,6 +11,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
 
   const validate = () => {
     const newErrors = {};
@@ -19,6 +19,9 @@ const SignUpPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
+    if (!fullName) {
+      newErrors.fullName = 'Full name is required';
+    }
     if (!phoneNumber.match(phoneRegex)) {
       newErrors.phoneNumber = 'Phone number must be 10 digits starting with 0';
     }
@@ -51,8 +54,14 @@ const SignUpPage = () => {
       });
 
       if (response.status === 201) {
-        console.log('Signed up successfully:', response.data);
-        // Handle successful signup (e.g., redirect or show a success message)
+        setMessage('Registration successful! Please log in.');
+        setErrors({});
+        // Clear form fields after successful registration
+        setFullName('');
+        setPhoneNumber('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
       }
     } catch (error) {
       if (error.response) {
@@ -60,6 +69,7 @@ const SignUpPage = () => {
       } else {
         setErrors({ server: 'Network error' });
       }
+      setMessage('');
     }
   };
 
@@ -71,37 +81,40 @@ const SignUpPage = () => {
           label="Full Name"
           type="text"
           value={fullName}
-          onChange={e => setFullName(e.target.value)}
+          onChange={(e) => setFullName(e.target.value)}
+          error={errors.fullName}
         />
         <InputField
-          label="Enter your phone number"
+          label="Phone Number"
           type="tel"
           value={phoneNumber}
-          onChange={e => setPhoneNumber(e.target.value)}
+          onChange={(e) => setPhoneNumber(e.target.value)}
           error={errors.phoneNumber}
         />
         <InputField
-          label="Enter your email"
+          label="Email"
           type="email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           error={errors.email}
         />
         <InputField
-          label="Enter a new password"
+          label="Password"
           type="password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
         />
         <InputField
-          label="Confirm password"
+          label="Confirm Password"
           type="password"
           value={confirmPassword}
-          onChange={e => setConfirmPassword(e.target.value)}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           error={errors.confirmPassword}
         />
-        <Button text="Done" onClick={handleSignUp} />
+        <button onClick={handleSignUp}>Done</button>
+        {message && <p style={styles.successMessage}>{message}</p>}
+        {errors.server && <p style={styles.errorMessage}>{errors.server}</p>}
         <div style={styles.linkContainer}>
           <span>Already have an account? </span>
           <Link to="/login" style={styles.link}>Log In</Link>
@@ -122,13 +135,13 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    color: '#fff', // Adjust text color for better readability on the background
+    color: '#fff',
   },
   formContainer: {
     width: '80%',
     maxWidth: '400px',
     textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Add a semi-transparent background for readability
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: '20px',
     borderRadius: '10px',
   },
@@ -139,6 +152,14 @@ const styles = {
     color: '#5B67CA',
     cursor: 'pointer',
     textDecoration: 'underline',
+  },
+  successMessage: {
+    color: 'green',
+    marginTop: '10px',
+  },
+  errorMessage: {
+    color: 'red',
+    marginTop: '10px',
   },
 };
 

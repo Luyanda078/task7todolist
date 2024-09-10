@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from '../../inputfield';
-import Button from '../button';
+// import Button from '../button';
 import Header from '../header';
 import axios from 'axios';
 
@@ -68,7 +68,7 @@ const Login = () => {
           error={errors.password}
         />
         {errors.server && <p style={styles.error}>{errors.server}</p>}
-        <Button text="Log In" onClick={handleLogin} />
+        <button text="Log In" onClick={handleLogin} >Done</button>
         <p style={styles.forgotPassword}>Forgot Password?</p>
         <div style={styles.linkContainer}>
           <span>Don’t have an account? </span>
